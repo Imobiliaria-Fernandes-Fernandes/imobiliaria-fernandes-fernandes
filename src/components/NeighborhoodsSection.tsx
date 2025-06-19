@@ -4,38 +4,38 @@ import { MapPin } from "lucide-react";
 
 const neighborhoods = [
   {
-    name: "Vila Madalena",
-    city: "São Paulo",
+    name: "Centro",
+    city: "Guarulhos",
     properties: 12,
     image: "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=400&h=300&fit=crop"
   },
   {
-    name: "Jardins",
-    city: "São Paulo", 
+    name: "Vila Galvão",
+    city: "Guarulhos", 
     properties: 8,
     image: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=400&h=300&fit=crop"
   },
   {
-    name: "Moema",
-    city: "São Paulo",
+    name: "Jardim Zaira",
+    city: "Guarulhos",
     properties: 15,
     image: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&h=300&fit=crop"
   },
   {
-    name: "Vila Olímpia",
-    city: "São Paulo",
+    name: "Vila Augusta",
+    city: "Guarulhos",
     properties: 9,
     image: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400&h=300&fit=crop"
   },
   {
-    name: "Alphaville",
-    city: "Barueri",
+    name: "Macedo",
+    city: "Guarulhos",
     properties: 6,
     image: "https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=400&h=300&fit=crop"
   },
   {
-    name: "Centro",
-    city: "Campinas",
+    name: "Jardim São Paulo",
+    city: "Guarulhos",
     properties: 11,
     image: "https://images.unsplash.com/photo-1560185127-6ed189bf02f4?w=400&h=300&fit=crop"
   }

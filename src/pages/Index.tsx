@@ -12,21 +12,21 @@ const Index = () => {
       
       {/* Hero Section with Search */}
       <section className="relative min-h-[80vh] bg-gradient-to-r from-graphite-900 to-graphite-700 flex items-center justify-center">
-        <div className="absolute inset-0 bg-black opacity-40"></div>
+        <div className="absolute inset-0 bg-black opacity-50"></div>
         <div 
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage: "url('https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=1200&h=800&fit=crop')"
+            backgroundImage: "url('/lovable-uploads/1ccfe406-78f7-4775-a061-d9f1824a12ab.png')"
           }}
         ></div>
         
         <div className="relative z-10 text-center text-white max-w-6xl mx-auto px-4 py-8">
           {/* Main Heading */}
           <div className="mb-8">
-            <h1 className="text-4xl md:text-6xl font-bold mb-4 animate-fade-in">
+            <h1 className="text-4xl md:text-6xl font-bold mb-4 animate-fade-in text-white drop-shadow-2xl">
               Seu novo <span className="text-golden-300">lar está aqui!</span>
             </h1>
-            <p className="text-lg md:text-xl opacity-90 animate-fade-in">
+            <p className="text-lg md:text-xl text-white drop-shadow-lg animate-fade-in">
               Encontre o imóvel dos seus sonhos
             </p>
           </div>
@@ -40,7 +40,7 @@ const Index = () => {
           <div className="animate-fade-in">
             <Link 
               to="/imoveis"
-              className="inline-flex items-center text-golden-300 hover:text-golden-200 transition-colors duration-300 text-lg font-medium"
+              className="inline-flex items-center text-golden-300 hover:text-golden-200 transition-colors duration-300 text-lg font-medium drop-shadow-lg"
             >
               Ou explore todos os imóveis
               <ArrowRight className="ml-2 h-5 w-5" />
@@ -57,7 +57,7 @@ const Index = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-graphite-900 mb-4">
-              Por que escolher a Casa Dourada?
+              Por que escolher a Fernandes & Fernandes?
             </h2>
             <p className="text-xl text-graphite-600 max-w-2xl mx-auto">
               Sua parceira ideal na busca pelo imóvel dos seus sonhos
@@ -120,12 +120,16 @@ const Index = () => {
       {/* Footer */}
       <footer className="bg-graphite-900 text-white py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="flex items-center justify-center space-x-2 mb-4">
-            <Building2 className="h-6 w-6 text-golden-500" />
-            <span className="text-xl font-bold">Casa Dourada</span>
+          <div className="flex items-center justify-center space-x-3 mb-4">
+            <img 
+              src="/lovable-uploads/ac045336-68d1-4e78-a5d4-3fe2f9815489.png" 
+              alt="Fernandes & Fernandes Logo" 
+              className="h-6 w-auto"
+            />
+            <span className="text-xl font-bold">Imobiliária Fernandes & Fernandes</span>
           </div>
           <p className="text-gray-300">
-            © 2024 Casa Dourada Imóveis. Todos os direitos reservados.
+            © 2024 Imobiliária Fernandes & Fernandes. Todos os direitos reservados.
           </p>
         </div>
       </footer>

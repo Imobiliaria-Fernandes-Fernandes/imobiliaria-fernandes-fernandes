@@ -1,15 +1,18 @@
 
 import { Link } from "react-router-dom";
-import { Building2 } from "lucide-react";
 
 const Navbar = () => {
   return (
     <nav className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <Link to="/" className="flex items-center space-x-2">
-            <Building2 className="h-8 w-8 text-golden-500" />
-            <span className="text-xl font-bold text-graphite-900">Casa Dourada</span>
+          <Link to="/" className="flex items-center space-x-3">
+            <img 
+              src="/lovable-uploads/ac045336-68d1-4e78-a5d4-3fe2f9815489.png" 
+              alt="Fernandes & Fernandes Logo" 
+              className="h-10 w-auto"
+            />
+            <span className="text-xl font-bold text-graphite-900">Imobiliária Fernandes & Fernandes</span>
           </Link>
           
           <div className="hidden md:flex space-x-8">

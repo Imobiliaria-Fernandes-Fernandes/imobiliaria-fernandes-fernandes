@@ -70,7 +70,7 @@ const PropertySearch = ({ onSearch, showAdvancedFilters = true }: PropertySearch
             <Home className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5 z-10" />
             <Select value={filters.propertyType} onValueChange={(value) => setFilters(prev => ({ ...prev, propertyType: value }))}>
               <SelectTrigger className="pl-10 h-12 border-gray-300 focus:border-golden-500">
-                <SelectValue placeholder="Tipo imóvel" />
+                <SelectValue placeholder="Selecione o tipo de imóvel" />
               </SelectTrigger>
               <SelectContent className="bg-white border border-gray-200 shadow-lg">
                 <SelectItem value="apartamento">Apartamento</SelectItem>
@@ -88,9 +88,10 @@ const PropertySearch = ({ onSearch, showAdvancedFilters = true }: PropertySearch
             <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5 z-10" />
             <Select value={filters.location} onValueChange={(value) => setFilters(prev => ({ ...prev, location: value }))}>
               <SelectTrigger className="pl-10 h-12 border-gray-300 focus:border-golden-500">
-                <SelectValue placeholder="Localização" />
+                <SelectValue placeholder="Escolha a região desejada" />
               </SelectTrigger>
               <SelectContent className="bg-white border border-gray-200 shadow-lg">
+                <SelectItem value="guarulhos">Guarulhos</SelectItem>
                 <SelectItem value="sao-paulo">São Paulo</SelectItem>
                 <SelectItem value="campinas">Campinas</SelectItem>
                 <SelectItem value="santos">Santos</SelectItem>
@@ -107,7 +108,7 @@ const PropertySearch = ({ onSearch, showAdvancedFilters = true }: PropertySearch
           <div>
             <Select value={filters.priceRange} onValueChange={(value) => setFilters(prev => ({ ...prev, priceRange: value }))}>
               <SelectTrigger className="h-12 border-gray-300 focus:border-golden-500">
-                <SelectValue placeholder="Faixa de preço" />
+                <SelectValue placeholder="Informe sua faixa de preço" />
               </SelectTrigger>
               <SelectContent className="bg-white border border-gray-200 shadow-lg">
                 <SelectItem value="0-500000">Até R$ 500.000</SelectItem>
