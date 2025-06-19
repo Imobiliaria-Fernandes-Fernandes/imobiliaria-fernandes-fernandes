@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,6 +62,31 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				// Cores personalizadas da imobiliária
+				golden: {
+					50: '#fefbf3',
+					100: '#fdf5e1',
+					200: '#fae8be',
+					300: '#f6d490',
+					400: '#f0bb60',
+					500: '#d0b272',
+					600: '#b8935a',
+					700: '#9a7449',
+					800: '#7d5e3d',
+					900: '#664e33'
+				},
+				graphite: {
+					50: '#f8f8f8',
+					100: '#f0f0f0',
+					200: '#e4e4e4',
+					300: '#d1d1d1',
+					400: '#b4b4b4',
+					500: '#9a9a9a',
+					600: '#818181',
+					700: '#6a6a6a',
+					800: '#5a5a5a',
+					900: '#2d2d2d'
 				}
 			},
 			borderRadius: {
@@ -84,11 +110,22 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'fade-in': {
+					'0%': {
+						opacity: '0',
+						transform: 'translateY(10px)'
+					},
+					'100%': {
+						opacity: '1',
+						transform: 'translateY(0)'
+					}
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'fade-in': 'fade-in 0.6s ease-out'
 			}
 		}
 	},
