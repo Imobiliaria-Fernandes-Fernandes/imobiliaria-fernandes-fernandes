@@ -1,13 +1,24 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Search, Filter } from "lucide-react";
 import Navbar from "../components/Navbar";
 import PropertyCard from "../components/PropertyCard";
 import { properties } from "../data/properties";
 
 const Properties = () => {
+  const [searchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterLocation, setFilterLocation] = useState("");
+
+  // Initialize filters from URL params
+  useEffect(() => {
+    const query = searchParams.get('q') || '';
+    const location = searchParams.get('local') || '';
+    
+    setSearchTerm(query);
+    setFilterLocation(location);
+  }, [searchParams]);
 
   const filteredProperties = properties.filter(property => {
     const matchesSearch = property.title.toLowerCase().includes(searchTerm.toLowerCase()) ||

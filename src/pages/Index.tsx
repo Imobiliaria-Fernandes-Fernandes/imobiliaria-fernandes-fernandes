@@ -2,14 +2,15 @@
 import { Link } from "react-router-dom";
 import { ArrowRight, Building2, Key, Home } from "lucide-react";
 import Navbar from "../components/Navbar";
+import PropertySearch from "../components/PropertySearch";
 
 const Index = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
       
-      {/* Hero Section */}
-      <section className="relative h-[70vh] bg-gradient-to-r from-graphite-900 to-graphite-700 flex items-center justify-center">
+      {/* Hero Section with Search */}
+      <section className="relative min-h-[80vh] bg-gradient-to-r from-graphite-900 to-graphite-700 flex items-center justify-center">
         <div className="absolute inset-0 bg-black opacity-40"></div>
         <div 
           className="absolute inset-0 bg-cover bg-center"
@@ -18,20 +19,32 @@ const Index = () => {
           }}
         ></div>
         
-        <div className="relative z-10 text-center text-white max-w-4xl mx-auto px-4">
-          <h1 className="text-5xl md:text-6xl font-bold mb-6 animate-fade-in">
-            Encontre seu <span className="text-golden-300">Lar Ideal</span>
-          </h1>
-          <p className="text-xl md:text-2xl mb-8 opacity-90 animate-fade-in">
-            Os melhores imóveis em São Paulo e região metropolitana
-          </p>
-          <Link 
-            to="/imoveis"
-            className="inline-flex items-center bg-golden-500 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-golden-600 transition-all duration-300 transform hover:scale-105 animate-fade-in"
-          >
-            Ver Imóveis
-            <ArrowRight className="ml-2 h-5 w-5" />
-          </Link>
+        <div className="relative z-10 text-center text-white max-w-6xl mx-auto px-4 py-8">
+          {/* Main Heading */}
+          <div className="mb-8">
+            <h1 className="text-4xl md:text-6xl font-bold mb-4 animate-fade-in">
+              Seu novo <span className="text-golden-300">lar está aqui!</span>
+            </h1>
+            <p className="text-lg md:text-xl opacity-90 animate-fade-in">
+              Encontre o imóvel dos seus sonhos
+            </p>
+          </div>
+
+          {/* Search Component */}
+          <div className="mb-8 animate-fade-in">
+            <PropertySearch />
+          </div>
+
+          {/* Quick Action Button */}
+          <div className="animate-fade-in">
+            <Link 
+              to="/imoveis"
+              className="inline-flex items-center text-golden-300 hover:text-golden-200 transition-colors duration-300 text-lg font-medium"
+            >
+              Ou explore todos os imóveis
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Link>
+          </div>
         </div>
       </section>
 
