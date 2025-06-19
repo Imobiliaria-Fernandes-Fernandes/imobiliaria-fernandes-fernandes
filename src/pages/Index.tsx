@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight, Building2, Key, Home } from "lucide-react";
 import Navbar from "../components/Navbar";
 import PropertySearch from "../components/PropertySearch";
+import NeighborhoodsSection from "../components/NeighborhoodsSection";
 
 const Index = () => {
   return (
@@ -47,6 +48,9 @@ const Index = () => {
           </div>
         </div>
       </section>
+
+      {/* Neighborhoods Section */}
+      <NeighborhoodsSection />
 
       {/* Features Section */}
       <section className="py-16 bg-white">

@@ -26,7 +26,7 @@ const Navbar = () => {
               Imóveis
             </Link>
             <Link 
-              to="#contato" 
+              to="/contato" 
               className="text-graphite-700 hover:text-golden-500 transition-colors duration-200 font-medium"
             >
               Contato
