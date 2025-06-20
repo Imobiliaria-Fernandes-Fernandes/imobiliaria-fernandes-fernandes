@@ -17,13 +17,13 @@ const Navbar = () => {
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
-          <Link to="/" className="flex-shrink-0 flex items-center space-x-2">
+          <Link to="/" className="flex-shrink-0 flex items-center space-x-4">
             <img
-              className="h-8 w-auto"
-              src="/lovable-uploads/ac045336-68d1-4e78-a5d4-3fe2f9815489.png"
+              className="h-16 w-auto"
+              src="/logo-ff.png"
               alt="Logo Fernandes & Fernandes"
             />
-            <span className="text-xl font-bold text-graphite-900 hidden sm:block">
+            <span className="text-3xl font-bold text-graphite-900 hidden sm:block">
               Fernandes & Fernandes
             </span>
           </Link>

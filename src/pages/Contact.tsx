@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { MapPin, Phone, Mail, Clock, Send } from "lucide-react";
@@ -8,7 +7,8 @@ import { Input } from "../components/ui/input";
 import { Textarea } from "../components/ui/textarea";
 import { Label } from "../components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
-import { useToast } from "../hooks/use-toast";
+import { toast } from "sonner";
+import { supabase } from "../lib/supabaseClient";
 
 interface ContactFormData {
   name: string;
@@ -22,24 +22,34 @@ interface ContactFormData {
 
 const Contact = () => {
   const { register, handleSubmit, reset, formState: { errors } } = useForm<ContactFormData>();
-  const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const onSubmit = async (data: ContactFormData) => {
     setIsSubmitting(true);
     
-    // Simular envio do formulário
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    console.log('Dados do formulário:', data);
-    
-    toast({
-      title: "Mensagem enviada com sucesso!",
-      description: "Entraremos em contato em breve.",
+    const { error } = await supabase.from("contatos").insert({
+      nome: data.name,
+      email: data.email,
+      telefone: data.phone,
+      mensagem: data.message,
+      tipo_imovel: data.propertyType,
+      orcamento: data.budget,
+      bairro_interesse: data.neighborhood,
     });
-    
-    reset();
+
     setIsSubmitting(false);
+
+    if (error) {
+      console.error("Erro ao enviar contato:", error);
+      toast.error("Erro ao enviar mensagem.", {
+        description: "Por favor, tente novamente mais tarde.",
+      });
+    } else {
+      toast.success("Mensagem enviada com sucesso!", {
+        description: "Entraremos em contato em breve.",
+      });
+      reset();
+    }
   };
 
   return (
@@ -67,7 +77,7 @@ const Contact = () => {
           <div className="lg:col-span-1 space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle className="text-graphite-900">Informações de Contato</CardTitle>
+                <CardTitle className="text-graphite-900">Nossas Informações</CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="flex items-start space-x-4">
@@ -75,9 +85,9 @@ const Contact = () => {
                   <div>
                     <h3 className="font-semibold text-graphite-900">Endereço</h3>
                     <p className="text-graphite-600">
-                      Rua das Flores, 123<br />
-                      Jardins, São Paulo - SP<br />
-                      CEP: 01234-567
+                      Rua Fictícia, 123<br />
+                      Centro, Guarulhos - SP<br />
+                      CEP: 07000-000
                     </p>
                   </div>
                 </div>
@@ -87,8 +97,8 @@ const Contact = () => {
                   <div>
                     <h3 className="font-semibold text-graphite-900">Telefone</h3>
                     <p className="text-graphite-600">
-                      (11) 3456-7890<br />
-                      (11) 98765-4321
+                      (11) 2440-4040<br />
+                      (11) 99999-8888
                     </p>
                   </div>
                 </div>
@@ -98,8 +108,7 @@ const Contact = () => {
                   <div>
                     <h3 className="font-semibold text-graphite-900">E-mail</h3>
                     <p className="text-graphite-600">
-                      contato@casadourada.com.br<br />
-                      vendas@casadourada.com.br
+                      contato@fernandesfernandes.com.br
                     </p>
                   </div>
                 </div>
@@ -109,9 +118,8 @@ const Contact = () => {
                   <div>
                     <h3 className="font-semibold text-graphite-900">Horário de Funcionamento</h3>
                     <p className="text-graphite-600">
-                      Segunda à Sexta: 8h às 18h<br />
-                      Sábado: 8h às 14h<br />
-                      Domingo: Fechado
+                      Segunda à Sexta: 9h às 18h<br />
+                      Sábado: 9h às 13h
                     </p>
                   </div>
                 </div>

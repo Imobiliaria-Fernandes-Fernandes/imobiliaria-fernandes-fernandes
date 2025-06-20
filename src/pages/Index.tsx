@@ -4,7 +4,6 @@ import { ArrowRight, Building2, Key, Home, Upload } from "lucide-react";
 import Navbar from "../components/Navbar";
 import PropertySearch from "../components/PropertySearch";
 import NeighborhoodsSection from "../components/NeighborhoodsSection";
-import { properties as localProperties } from "../data/properties";
 import { supabase } from "../lib/supabaseClient";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
