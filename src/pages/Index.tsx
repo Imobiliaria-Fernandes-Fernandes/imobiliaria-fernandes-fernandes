@@ -10,14 +10,22 @@ const Index = () => {
       <Navbar />
       
       {/* Hero Section with Search */}
-      <section className="relative min-h-[80vh] bg-golden-300 flex items-center justify-center">
-        <div className="relative z-10 text-center text-graphite-900 max-w-6xl mx-auto px-4 py-8">
+      <section className="relative min-h-[80vh] bg-gradient-to-r from-graphite-900 to-graphite-700 flex items-center justify-center">
+        <div className="absolute inset-0 bg-black opacity-70"></div>
+        <div 
+          className="absolute inset-0 bg-cover bg-center"
+          style={{
+            backgroundImage: "url('/lovable-uploads/ponte-guarulhos-noite.jpg')"
+          }}
+        ></div>
+        
+        <div className="relative z-10 text-center text-white max-w-6xl mx-auto px-4 py-8">
           {/* Main Heading */}
           <div className="mb-8">
-            <h1 className="text-4xl md:text-6xl font-bold mb-4 animate-fade-in text-graphite-900 drop-shadow-2xl">
-              Seu novo <span className="text-golden-500">lar está aqui!</span>
+            <h1 className="text-4xl md:text-6xl font-bold mb-4 animate-fade-in text-white drop-shadow-2xl">
+              Seu novo <span className="text-golden-300">lar está aqui!</span>
             </h1>
-            <p className="text-lg md:text-xl text-graphite-900 drop-shadow-lg animate-fade-in">
+            <p className="text-lg md:text-xl text-white drop-shadow-lg animate-fade-in">
               Encontre o imóvel dos seus sonhos
             </p>
           </div>
@@ -31,7 +39,7 @@ const Index = () => {
           <div className="animate-fade-in">
             <Link 
               to="/imoveis"
-              className="inline-flex items-center text-golden-700 hover:text-golden-900 transition-colors duration-300 text-lg font-medium drop-shadow-lg"
+              className="inline-flex items-center text-golden-300 hover:text-golden-200 transition-colors duration-300 text-lg font-medium drop-shadow-lg"
             >
               Ou explore todos os imóveis
               <ArrowRight className="ml-2 h-5 w-5" />
