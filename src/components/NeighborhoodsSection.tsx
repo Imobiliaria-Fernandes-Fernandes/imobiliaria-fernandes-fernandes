@@ -7,8 +7,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 interface Neighborhood {
   name: string;
   city: string;
+  state: string;
   properties: number;
   image: string;
+  id: string;
 }
 
 // Função para processar os dados dos imóveis e agrupar por bairro
@@ -17,28 +19,33 @@ const getFeaturedNeighborhoods = (properties: any[]): Neighborhood[] => {
     return [];
   }
 
-  const neighborhoodData: { [key: string]: { count: number; image: string; city: string } } = {};
+  const neighborhoodData: { [key: string]: { count: number; image: string; city: string; state: string; name: string } } = {};
 
-  // Agrupa os imóveis por bairro
+  // Agrupa os imóveis por ID do bairro
   properties.forEach(prop => {
-    const neighborhoodName = prop.neighborhood;
-    if (!neighborhoodData[neighborhoodName]) {
-      neighborhoodData[neighborhoodName] = { 
+    if (!prop.bairros) return; // Pula se não houver bairro associado
+
+    const bairroId = prop.bairros.id;
+    if (!neighborhoodData[bairroId]) {
+      neighborhoodData[bairroId] = { 
         count: 0, 
-        // Usa a primeira imagem do primeiro imóvel encontrado no bairro
         image: prop.images?.[0] || "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=400&h=300&fit=crop", 
-        city: prop.city 
+        city: prop.bairros.city,
+        state: prop.bairros.state,
+        name: prop.bairros.name,
       };
     }
-    neighborhoodData[neighborhoodName].count++;
+    neighborhoodData[bairroId].count++;
   });
 
   // Converte o objeto em um array
-  const neighborhoodsArray = Object.keys(neighborhoodData).map(name => ({
-    name: name,
-    city: neighborhoodData[name].city,
-    properties: neighborhoodData[name].count,
-    image: neighborhoodData[name].image,
+  const neighborhoodsArray = Object.keys(neighborhoodData).map(id => ({
+    id: id,
+    name: neighborhoodData[id].name,
+    city: neighborhoodData[id].city,
+    state: neighborhoodData[id].state,
+    properties: neighborhoodData[id].count,
+    image: neighborhoodData[id].image,
   }));
 
   // Ordena por número de imóveis e pega os 6 primeiros
@@ -54,9 +61,10 @@ const NeighborhoodsSection = () => {
   useEffect(() => {
     const fetchNeighborhoods = async () => {
       setLoading(true);
+      // A consulta agora precisa buscar o imóvel e os dados do bairro aninhado
       const { data, error } = await supabase
         .from('imoveis')
-        .select('neighborhood, city, images'); // Seleciona apenas os campos necessários
+        .select('images, bairros(id, name, city, state)');
 
       if (error) {
         console.error("Erro ao buscar dados para bairros:", error);
@@ -100,7 +108,7 @@ const NeighborhoodsSection = () => {
             featuredNeighborhoods.map((neighborhood) => (
               <Link
                 key={neighborhood.name}
-                to={`/imoveis?local=${encodeURIComponent(neighborhood.name.toLowerCase().replace(/ /g, '-'))}`}
+                to={`/imoveis?local=${neighborhood.id}`}
                 className="group block"
               >
                 <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 transform group-hover:scale-105">
@@ -115,7 +123,7 @@ const NeighborhoodsSection = () => {
                       <h3 className="text-xl font-semibold mb-1">{neighborhood.name}</h3>
                       <div className="flex items-center text-sm opacity-90">
                         <MapPin className="h-4 w-4 mr-1" />
-                        <span>{neighborhood.city}</span>
+                        <span>{neighborhood.city}, {neighborhood.state}</span>
                       </div>
                     </div>
                   </div>

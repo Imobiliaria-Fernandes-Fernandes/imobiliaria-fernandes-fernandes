@@ -15,7 +15,7 @@ const Admin = () => {
       setLoading(true);
       const { data, error } = await supabase
         .from('imoveis')
-        .select('id, title, neighborhood, price, corretores(name)')
+        .select('id, title, price, corretores(name), bairros(name)')
         .order('created_at', { ascending: false });
 
       if (error) {
@@ -52,12 +52,19 @@ const Admin = () => {
       <main className="max-w-7xl mx-auto py-8 px-4">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold text-graphite-900">Painel Administrativo</h1>
-          <Button asChild>
-            <Link to="/painel-secreto-ff-imoveis/new">
-              <PlusCircle className="mr-2 h-4 w-4" />
-              Adicionar Imóvel
-            </Link>
-          </Button>
+          <div className="flex gap-4">
+            <Button variant="outline" asChild>
+              <Link to="/painel-secreto-ff-imoveis/bairros">
+                Gerenciar Bairros
+              </Link>
+            </Button>
+            <Button asChild>
+              <Link to="/painel-secreto-ff-imoveis/new">
+                <PlusCircle className="mr-2 h-4 w-4" />
+                Adicionar Imóvel
+              </Link>
+            </Button>
+          </div>
         </div>
 
         <div className="bg-white rounded-lg shadow-md">
@@ -82,7 +89,7 @@ const Admin = () => {
                 properties.map(property => (
                   <TableRow key={property.id}>
                     <TableCell className="font-medium">{property.title}</TableCell>
-                    <TableCell>{property.neighborhood}</TableCell>
+                    <TableCell>{property.bairros?.name || 'N/A'}</TableCell>
                     <TableCell>{formatCurrency(property.price)}</TableCell>
                     <TableCell>{property.corretores?.name || 'N/A'}</TableCell>
                     <TableCell className="text-right">

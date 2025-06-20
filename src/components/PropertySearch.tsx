@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
+import { supabase } from "@/lib/supabaseClient";
 
 interface PropertySearchProps {
   onSearch?: (filters: SearchFilters) => void;
@@ -19,6 +20,11 @@ interface SearchFilters {
   propertyType: string;
   location: string;
   priceRange: [number, number];
+}
+
+interface Bairro {
+  id: string;
+  name: string;
 }
 
 const formatCurrency = (value: number) => {
@@ -40,7 +46,7 @@ const PropertySearch = ({
     location: "",
     priceRange: [minPrice, maxPrice]
   });
-  
+  const [bairros, setBairros] = useState<Bairro[]>([]);
   const [isSearching, setIsSearching] = useState(false);
 
   useEffect(() => {
@@ -48,6 +54,16 @@ const PropertySearch = ({
       setFilters(value);
     }
   }, [value]);
+
+  useEffect(() => {
+    const fetchBairros = async () => {
+      const { data, error } = await supabase.from('bairros').select('id, name').order('name');
+      if (data) {
+        setBairros(data);
+      }
+    };
+    fetchBairros();
+  }, []);
 
   const handleSearch = useCallback(async (currentFilters = filters) => {
     setIsSearching(true);
@@ -72,11 +88,18 @@ const PropertySearch = ({
   }, [filters, onSearch, navigate, minPrice, maxPrice]);
 
   useEffect(() => {
-    const initialRender = filters.propertyType === "" && filters.location === "";
-    if (!initialRender) {
-      handleSearch();
+    const isInitialMount = !filters.propertyType && !filters.location;
+    if (isInitialMount) {
+      return; 
     }
-  }, [filters.propertyType, filters.location]);
+    
+    const performSearch = () => {
+      handleSearch();
+    };
+    
+    performSearch();
+
+  }, [filters.propertyType, filters.location, handleSearch]);
 
   const handleQueryChange = (value: string) => {
     setFilters(prev => ({ ...prev, query: value }));
@@ -149,18 +172,11 @@ const PropertySearch = ({
               <SelectValue placeholder="Região Desejada" />
             </SelectTrigger>
             <SelectContent>
-                <SelectItem value="centro">Centro</SelectItem>
-                <SelectItem value="vila-galvao">Vila Galvão</SelectItem>
-                <SelectItem value="jardim-maia">Jardim Maia</SelectItem>
-                <SelectItem value="macedo">Macedo</SelectItem>
-                <SelectItem value="vila-augusta">Vila Augusta</SelectItem>
-                <SelectItem value="picanco">Picanço</SelectItem>
-                <SelectItem value="gopouva">Gopoúva</SelectItem>
-                <SelectItem value="cumbica">Cumbica</SelectItem>
-                <SelectItem value="parque-cecap">Parque Cecap</SelectItem>
-                <SelectItem value="torres-tibagy">Torres Tibagy</SelectItem>
-                <SelectItem value="ponte-grande">Ponte Grande</SelectItem>
-                <SelectItem value="vila-rosalia">Vila Rosália</SelectItem>
+              {bairros.map((bairro) => (
+                <SelectItem key={bairro.id} value={bairro.id}>
+                  {bairro.name}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>

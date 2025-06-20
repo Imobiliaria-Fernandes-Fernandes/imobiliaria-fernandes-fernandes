@@ -1,7 +1,26 @@
-
 import { Link } from "react-router-dom";
 import { Bed, Bath, Car, MapPin } from "lucide-react";
-import { Property } from "../data/properties";
+
+// Definindo a interface Property diretamente no arquivo
+export interface Property {
+  id: string;
+  title: string;
+  bairros: {
+    name: string;
+    city: string;
+    state: string;
+  };
+  price: number;
+  images: string[];
+  rooms: {
+    bedrooms: number;
+    bathrooms: number;
+    parkingSpaces?: number;
+  };
+  areas: {
+    useful: number;
+  };
+}
 
 interface PropertyCardProps {
   property: Property;
@@ -37,7 +56,7 @@ const PropertyCard = ({ property }: PropertyCardProps) => {
         <div className="flex items-center text-graphite-600 mb-4">
           <MapPin className="h-4 w-4 mr-1" />
           <span className="text-sm">
-            {property.location.neighborhood}, {property.location.city} - {property.location.state}
+            {property.bairros.name}, {property.bairros.city} - {property.bairros.state}
           </span>
         </div>
         

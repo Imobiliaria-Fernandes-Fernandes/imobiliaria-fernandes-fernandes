@@ -21,10 +21,10 @@ interface Realtor {
 export interface Property {
   id: string;
   title: string;
-  location: {
-    neighborhood: string;
+  bairros: {
+    name: string;
     city: string;
-    state:string;
+    state: string;
   };
   price: number;
   condominiumFee?: number;
@@ -45,6 +45,7 @@ export interface Property {
   realtor: Realtor; // A propriedade realtor agora é um objeto Realtor
   propertyType?: string;
   corretor_id?: string; // ID da chave estrangeira
+  bairro_id?: string;
 }
 
 // Função para mapear um único objeto do Supabase
@@ -52,11 +53,7 @@ const mapSingleSupabaseToProperty = (p: any): Property => {
   return {
     id: p.id,
     title: p.title,
-    location: {
-      neighborhood: p.neighborhood,
-      city: p.city,
-      state: p.state,
-    },
+    bairros: p.bairros,
     price: p.price,
     condominiumFee: p.condominium_fee,
     iptu: p.iptu,
@@ -73,9 +70,10 @@ const mapSingleSupabaseToProperty = (p: any): Property => {
     amenities: p.amenities || [],
     condominiumFeatures: p.condominium_features || [],
     images: p.images || [],
-    realtor: p.corretores, // Mapeando o objeto aninhado 'corretores'
+    realtor: p.corretores,
     propertyType: p.property_type,
     corretor_id: p.corretor_id,
+    bairro_id: p.bairro_id,
   };
 };
 
@@ -88,12 +86,13 @@ const PropertyDetail = () => {
     const fetchProperty = async () => {
       if (!id) return;
       setLoading(true);
-      // Consulta atualizada para buscar dados da tabela 'corretores'
+      // Consulta atualizada para buscar dados de 'bairros'
       const { data, error } = await supabase
         .from('imoveis')
         .select(`
           *,
-          corretores(*)
+          corretores(*),
+          bairros(*)
         `)
         .eq('id', id)
         .single();
@@ -205,7 +204,7 @@ const PropertyDetail = () => {
               <div className="flex items-center text-graphite-600 mb-6">
                 <MapPin className="h-5 w-5 mr-2" />
                 <span className="text-lg">
-                  {property.location.neighborhood}, {property.location.city} - {property.location.state}
+                  {property.bairros.name}, {property.bairros.city} - {property.bairros.state}
                 </span>
               </div>
             </div>

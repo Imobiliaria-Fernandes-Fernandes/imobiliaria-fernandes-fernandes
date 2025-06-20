@@ -13,14 +13,16 @@ interface Corretor {
   name: string;
 }
 
+interface Bairro {
+  id: string;
+  name: string;
+}
+
 const PropertyFormPage = () => {
   const { id } = useParams(); // Pega o ID da URL se estiver editando
   const navigate = useNavigate();
   const [property, setProperty] = useState<any>({
     title: '',
-    neighborhood: '',
-    city: 'Guarulhos',
-    state: 'SP',
     price: 0,
     condominium_fee: 0,
     iptu: 0,
@@ -34,19 +36,28 @@ const PropertyFormPage = () => {
     condominium_features: [],
     images: [],
     corretor_id: null,
+    bairro_id: null,
   });
   const [corretores, setCorretores] = useState<Corretor[]>([]);
+  const [bairros, setBairros] = useState<Bairro[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // Busca a lista de corretores para o seletor
-    const fetchCorretores = async () => {
-      const { data, error } = await supabase.from('corretores').select('id, name');
-      if (error) console.error('Erro ao buscar corretores:', error);
-      else setCorretores(data);
+    // Busca corretores e bairros em paralelo
+    const fetchData = async () => {
+      const [corretoresRes, bairrosRes] = await Promise.all([
+        supabase.from('corretores').select('id, name'),
+        supabase.from('bairros').select('id, name')
+      ]);
+
+      if (corretoresRes.error) console.error('Erro ao buscar corretores:', corretoresRes.error);
+      else setCorretores(corretoresRes.data);
+
+      if (bairrosRes.error) console.error('Erro ao buscar bairros:', bairrosRes.error);
+      else setBairros(bairrosRes.data);
     };
 
-    fetchCorretores();
+    fetchData();
 
     // Se houver um ID, busca os dados do imóvel para edição
     if (id) {
@@ -85,14 +96,17 @@ const PropertyFormPage = () => {
     e.preventDefault();
     setLoading(true);
 
+    // Remove campos que não existem mais na tabela 'imoveis' antes de salvar
+    const { neighborhood, city, state, ...dataToSave } = property;
+
     let error;
 
     if (id) {
       // Modo de Edição
-      ({ error } = await supabase.from('imoveis').update(property).eq('id', id));
+      ({ error } = await supabase.from('imoveis').update(dataToSave).eq('id', id));
     } else {
       // Modo de Criação
-      ({ error } = await supabase.from('imoveis').insert([property]));
+      ({ error } = await supabase.from('imoveis').insert([dataToSave]));
     }
 
     if (error) {
@@ -121,35 +135,24 @@ const PropertyFormPage = () => {
               <Label htmlFor="title">Título do Anúncio</Label>
               <Input id="title" name="title" value={property.title} onChange={handleChange} required />
             </div>
-            <div>
-              <Label htmlFor="corretor_id">Corretor Responsável</Label>
-              <Select name="corretor_id" value={property.corretor_id} onValueChange={(value) => handleSelectChange('corretor_id', value)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione um corretor" />
-                </SelectTrigger>
-                <SelectContent>
-                  {corretores.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
-                </SelectContent>
-              </Select>
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="corretor_id">Corretor Responsável</Label>
+                  <Select name="corretor_id" value={property.corretor_id} onValueChange={(value) => handleSelectChange('corretor_id', value)}>
+                    <SelectTrigger><SelectValue placeholder="Selecione um corretor" /></SelectTrigger>
+                    <SelectContent>{corretores.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="bairro_id">Bairro</Label>
+                   <Select name="bairro_id" value={property.bairro_id} onValueChange={(value) => handleSelectChange('bairro_id', value)} required>
+                    <SelectTrigger><SelectValue placeholder="Selecione um bairro" /></SelectTrigger>
+                    <SelectContent>{bairros.map(b => <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>)}</SelectContent>
+                  </Select>
+                </div>
             </div>
           </div>
 
-          {/* Localização */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <Label htmlFor="neighborhood">Bairro</Label>
-              <Input id="neighborhood" name="neighborhood" value={property.neighborhood} onChange={handleChange} required />
-            </div>
-            <div>
-              <Label htmlFor="city">Cidade</Label>
-              <Input id="city" name="city" value={property.city} onChange={handleChange} />
-            </div>
-            <div>
-              <Label htmlFor="state">Estado</Label>
-              <Input id="state" name="state" value={property.state} onChange={handleChange} />
-            </div>
-          </div>
-          
           {/* Valores */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>

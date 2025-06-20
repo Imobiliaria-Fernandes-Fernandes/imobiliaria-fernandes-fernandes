@@ -10,6 +10,7 @@ import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
 import Admin from "./pages/Admin";
 import PropertyFormPage from "./pages/PropertyFormPage";
+import NeighborhoodAdmin from "./pages/NeighborhoodAdmin";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +31,7 @@ const App = () => (
           <Route path="/painel-secreto-ff-imoveis" element={<Admin />} />
           <Route path="/painel-secreto-ff-imoveis/new" element={<PropertyFormPage />} />
           <Route path="/painel-secreto-ff-imoveis/edit/:id" element={<PropertyFormPage />} />
+          <Route path="/painel-secreto-ff-imoveis/bairros" element={<NeighborhoodAdmin />} />
 
           {/* Rota 404 */}
           <Route path="*" element={<NotFound />} />

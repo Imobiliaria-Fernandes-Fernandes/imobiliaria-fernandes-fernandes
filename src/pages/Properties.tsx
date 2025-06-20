@@ -20,8 +20,9 @@ interface Realtor {
 export interface Property {
   id: string;
   title: string;
-  location: {
-    neighborhood: string;
+  bairros: {
+    id: string;
+    name: string;
     city: string;
     state: string;
   };
@@ -44,6 +45,7 @@ export interface Property {
   realtor: Realtor;
   propertyType?: string;
   corretor_id?: string;
+  bairro_id?: string;
 }
 
 // Definindo a interface para os filtros de busca
@@ -59,11 +61,7 @@ const mapSupabaseToProperty = (data: any[]): Property[] => {
   return data.map(p => ({
     id: p.id,
     title: p.title,
-    location: {
-      neighborhood: p.neighborhood,
-      city: p.city,
-      state: p.state,
-    },
+    bairros: p.bairros,
     price: p.price,
     condominiumFee: p.condominium_fee,
     iptu: p.iptu,
@@ -80,9 +78,10 @@ const mapSupabaseToProperty = (data: any[]): Property[] => {
     amenities: p.amenities || [],
     condominiumFeatures: p.condominium_features || [],
     images: p.images || [],
-    realtor: p.corretores, // Mapeando o objeto aninhado 'corretores'
+    realtor: p.corretores,
     propertyType: p.property_type,
     corretor_id: p.corretor_id,
+    bairro_id: p.bairro_id,
   }));
 };
 
@@ -95,13 +94,9 @@ const Properties = () => {
   useEffect(() => {
     const fetchProperties = async () => {
       setLoading(true);
-      // Consulta atualizada para buscar dados da tabela 'corretores'
       const { data, error } = await supabase
         .from('imoveis')
-        .select(`
-          *,
-          corretores(*)
-        `);
+        .select(`*, corretores(*), bairros(*)`);
       
       if (error) {
         console.error("Erro ao buscar imóveis:", error);
@@ -158,7 +153,7 @@ const Properties = () => {
     setSearchParams(params);
   }, [setSearchParams, priceLimits]);
 
-  // Filtra as propriedades com base nos filtros (ainda no lado do cliente)
+  // Filtra as propriedades com base nos filtros
   const filteredProperties = useMemo(() => {
     if (loading) return [];
     
@@ -167,12 +162,12 @@ const Properties = () => {
 
       const matchesQuery = !query || 
                            property.title.toLowerCase().includes(query.toLowerCase()) ||
-                           property.location.neighborhood.toLowerCase().includes(query.toLowerCase()) ||
-                           property.location.city.toLowerCase().includes(query.toLowerCase());
+                           property.bairros.name.toLowerCase().includes(query.toLowerCase()) ||
+                           property.bairros.city.toLowerCase().includes(query.toLowerCase());
 
       const matchesType = !propertyType || property.propertyType === propertyType;
       
-      const matchesLocation = !location || property.location.neighborhood.toLowerCase().replace(/ /g, '-') === location;
+      const matchesLocation = !location || property.bairros.id === location;
 
       const matchesPrice = property.price >= priceRange[0] && property.price <= priceRange[1];
 
