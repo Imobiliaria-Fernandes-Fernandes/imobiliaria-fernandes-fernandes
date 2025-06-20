@@ -1,20 +1,52 @@
-import { useMemo } from "react";
-import { Link } from "react-router-dom";
-import { ArrowRight, Building2, Key, Home } from "lucide-react";
+import { useMemo, useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { ArrowRight, Building2, Key, Home, Upload } from "lucide-react";
 import Navbar from "../components/Navbar";
 import PropertySearch from "../components/PropertySearch";
 import NeighborhoodsSection from "../components/NeighborhoodsSection";
-import { properties } from "../data/properties";
+import { properties as localProperties } from "../data/properties";
+import { supabase } from "../lib/supabaseClient";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const Index = () => {
-  const priceRange = useMemo(() => {
-    if (properties.length === 0) return { min: 0, max: 1000000 };
-    const prices = properties.map(p => p.price);
-    return {
-      min: Math.min(...prices),
-      max: Math.max(...prices),
+  const [priceRange, setPriceRange] = useState({ min: 0, max: 2000000 });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPriceRange = async () => {
+      setLoading(true);
+      const { data, error } = await supabase.rpc('get_price_range');
+
+      if (error || !data) {
+        console.error("Erro ao buscar faixa de preço:", error);
+        setPriceRange({ min: 0, max: 2000000 });
+      } else {
+        setPriceRange({ min: data.min_price, max: data.max_price });
+      }
+      setLoading(false);
     };
+
+    fetchPriceRange();
   }, []);
+
+  const navigate = useNavigate();
+
+  const handleSearch = (filters: { query: string; propertyType: string; location: string; priceRange: [number, number]; }) => {
+    const params = new URLSearchParams();
+    if (filters.query) params.set('q', filters.query);
+    if (filters.propertyType) params.set('tipo', filters.propertyType);
+    if (filters.location) params.set('local', filters.location);
+    
+    if (filters.priceRange[0] > priceRange.min) {
+      params.set('min_price', filters.priceRange[0].toString());
+    }
+    if (filters.priceRange[1] < priceRange.max) {
+      params.set('max_price', filters.priceRange[1].toString());
+    }
+
+    navigate(`/imoveis?${params.toString()}`);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -43,10 +75,19 @@ const Index = () => {
 
           {/* Search Component */}
           <div className="mb-8 animate-fade-in">
-            <PropertySearch 
-              minPrice={priceRange.min}
-              maxPrice={priceRange.max}
-            />
+            {!loading && (
+              <PropertySearch 
+                onSearch={handleSearch} 
+                showAdvancedFilters={true}
+                minPrice={priceRange.min}
+                maxPrice={priceRange.max}
+              />
+            )}
+            {loading && (
+               <div className="max-w-4xl mx-auto">
+                  <Skeleton className="h-16 w-full rounded-lg" />
+               </div>
+            )}
           </div>
 
           {/* Quick Action Button */}
