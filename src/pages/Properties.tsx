@@ -1,93 +1,104 @@
-
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Search, Filter } from "lucide-react";
 import Navbar from "../components/Navbar";
 import PropertyCard from "../components/PropertyCard";
+import PropertySearch from "../components/PropertySearch";
 import { properties } from "../data/properties";
 
+// Definindo a interface para os filtros de busca
+interface SearchFilters {
+  query: string;
+  propertyType: string;
+  location: string;
+  priceRange: [number, number];
+}
+
 const Properties = () => {
-  const [searchParams] = useSearchParams();
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filterLocation, setFilterLocation] = useState("");
+  const [searchParams, setSearchParams] = useSearchParams();
+  
+  const priceLimits = useMemo(() => {
+    if (properties.length === 0) return { min: 0, max: 2000000 };
+    const prices = properties.map(p => p.price);
+    return {
+      min: Math.min(...prices),
+      max: Math.max(...prices),
+    };
+  }, []);
 
-  // Initialize filters from URL params
-  useEffect(() => {
-    const query = searchParams.get('q') || '';
-    const location = searchParams.get('local') || '';
-    
-    setSearchTerm(query);
-    setFilterLocation(location);
-  }, [searchParams]);
-
-  const filteredProperties = properties.filter(property => {
-    const matchesSearch = property.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         property.location.neighborhood.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         property.location.city.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesLocation = !filterLocation || 
-                           property.location.city.toLowerCase().includes(filterLocation.toLowerCase());
-    
-    return matchesSearch && matchesLocation;
+  const [filters, setFilters] = useState<SearchFilters>({
+    query: '',
+    propertyType: '',
+    location: '',
+    priceRange: [priceLimits.min, priceLimits.max],
   });
+
+  // Inicializa os filtros a partir dos parâmetros da URL
+  useEffect(() => {
+    setFilters({
+      query: searchParams.get('q') || '',
+      propertyType: searchParams.get('tipo') || '',
+      location: searchParams.get('local') || '',
+      priceRange: [
+        Number(searchParams.get('min_price')) || priceLimits.min,
+        Number(searchParams.get('max_price')) || priceLimits.max,
+      ],
+    });
+  }, [searchParams, priceLimits]);
+
+  // Função para lidar com a busca, atualizando a URL
+  const handleSearch = useCallback((newFilters: SearchFilters) => {
+    setFilters(newFilters);
+    const params = new URLSearchParams();
+    if (newFilters.query) params.set('q', newFilters.query);
+    if (newFilters.propertyType) params.set('tipo', newFilters.propertyType);
+    if (newFilters.location) params.set('local', newFilters.location);
+    if (newFilters.priceRange[0] !== priceLimits.min) params.set('min_price', newFilters.priceRange[0].toString());
+    if (newFilters.priceRange[1] !== priceLimits.max) params.set('max_price', newFilters.priceRange[1].toString());
+    setSearchParams(params);
+  }, [setSearchParams, priceLimits]);
+
+  // Filtra as propriedades com base nos filtros
+  const filteredProperties = useMemo(() => properties.filter(property => {
+    const { query, propertyType, location, priceRange } = filters;
+
+    const matchesQuery = !query || 
+                         property.title.toLowerCase().includes(query.toLowerCase()) ||
+                         property.location.neighborhood.toLowerCase().includes(query.toLowerCase()) ||
+                         property.location.city.toLowerCase().includes(query.toLowerCase());
+
+    const matchesType = !propertyType || property.title.toLowerCase().includes(propertyType.toLowerCase());
+    
+    const matchesLocation = !location || property.location.neighborhood.toLowerCase().replace(/ /g, '-') === location;
+
+    const matchesPrice = property.price >= priceRange[0] && property.price <= priceRange[1];
+
+    return matchesQuery && matchesType && matchesLocation && matchesPrice;
+  }), [filters]);
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
       
-      {/* Header */}
-      <section className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-graphite-900 mb-4">
-            Imóveis Disponíveis
-          </h1>
-          <p className="text-xl text-graphite-600">
-            Encontre o imóvel perfeito para você
-          </p>
-        </div>
-      </section>
-
-      {/* Filters */}
-      <section className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-              <input
-                type="text"
-                placeholder="Buscar por título ou localização..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-golden-500 focus:border-transparent"
-              />
-            </div>
-            
-            <div className="relative">
-              <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-              <select
-                value={filterLocation}
-                onChange={(e) => setFilterLocation(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-golden-500 focus:border-transparent appearance-none"
-              >
-                <option value="">Todas as cidades</option>
-                <option value="São Paulo">São Paulo</option>
-                <option value="Campinas">Campinas</option>
-                <option value="Santos">Santos</option>
-              </select>
-            </div>
-            
-            <div className="flex items-center text-graphite-600">
-              <span className="text-sm">
-                {filteredProperties.length} imóveis encontrados
-              </span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Properties Grid */}
-      <section className="py-8">
+      {/* Seção de Busca de Imóveis */}
+      <section className="bg-graphite-50 pt-12 pb-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <PropertySearch 
+            onSearch={handleSearch} 
+            showAdvancedFilters={true}
+            minPrice={priceLimits.min}
+            maxPrice={priceLimits.max}
+          />
+        </div>
+      </section>
+
+      {/* Título da seção de resultados */}
+      <section className="pt-6 pb-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-2xl md:text-3xl font-bold text-graphite-900 mb-6">
+            {filteredProperties.length} Imóveis Encontrados
+          </h2>
+          
+          {/* Grid de Imóveis */}
           {filteredProperties.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredProperties.map(property => (
@@ -100,10 +111,7 @@ const Properties = () => {
                 Nenhum imóvel encontrado com os filtros selecionados.
               </p>
               <button 
-                onClick={() => {
-                  setSearchTerm("");
-                  setFilterLocation("");
-                }}
+                onClick={() => handleSearch({ query: '', propertyType: '', location: '', priceRange: [priceLimits.min, priceLimits.max] })}
                 className="text-golden-500 hover:text-golden-600 font-medium"
               >
                 Limpar filtros

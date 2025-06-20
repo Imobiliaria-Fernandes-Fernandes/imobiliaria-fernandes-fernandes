@@ -1,10 +1,21 @@
+import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, Building2, Key, Home } from "lucide-react";
 import Navbar from "../components/Navbar";
 import PropertySearch from "../components/PropertySearch";
 import NeighborhoodsSection from "../components/NeighborhoodsSection";
+import { properties } from "../data/properties";
 
 const Index = () => {
+  const priceRange = useMemo(() => {
+    if (properties.length === 0) return { min: 0, max: 1000000 };
+    const prices = properties.map(p => p.price);
+    return {
+      min: Math.min(...prices),
+      max: Math.max(...prices),
+    };
+  }, []);
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
@@ -32,7 +43,10 @@ const Index = () => {
 
           {/* Search Component */}
           <div className="mb-8 animate-fade-in">
-            <PropertySearch />
+            <PropertySearch 
+              minPrice={priceRange.min}
+              maxPrice={priceRange.max}
+            />
           </div>
 
           {/* Quick Action Button */}
