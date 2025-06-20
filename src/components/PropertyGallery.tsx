@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 
@@ -28,9 +27,17 @@ const PropertyGallery = ({ images, title }: PropertyGalleryProps) => {
     setIsModalOpen(false);
   };
 
+  if (!images || images.length === 0) {
+    return (
+      <div className="aspect-video bg-gray-200 rounded-lg flex items-center justify-center">
+        <span className="text-gray-500">Sem imagens</span>
+      </div>
+    );
+  }
+
   return (
     <>
-      <div className="grid grid-cols-4 gap-2 h-96">
+      <div className="grid grid-cols-4 gap-2 aspect-video">
         <div 
           className="col-span-3 cursor-pointer relative overflow-hidden rounded-lg"
           onClick={() => openModal(0)}

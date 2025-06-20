@@ -5,8 +5,42 @@ import Navbar from "../components/Navbar";
 import PropertyGallery from "../components/PropertyGallery";
 import ContactCard from "../components/ContactCard";
 import { supabase } from "../lib/supabaseClient";
-import { Property } from "../data/properties";
 import { Skeleton } from "@/components/ui/skeleton";
+
+// Definindo a interface Property aqui, já que o arquivo data/properties foi removido.
+export interface Property {
+  id: string;
+  title: string;
+  location: {
+    neighborhood: string;
+    city: string;
+    state:string;
+  };
+  price: number;
+  condominiumFee?: number;
+  iptu?: number;
+  areas: {
+    useful: number;
+    total?: number;
+  };
+  rooms: {
+    bedrooms: number;
+    bathrooms: number;
+    parkingSpaces?: number;
+  };
+  description: string;
+  amenities?: string[];
+  condominiumFeatures?: string[];
+  images: string[];
+  realtor: {
+    name: string;
+    creci: string;
+    photo: string;
+    phone: string;
+    whatsapp: string;
+  };
+  propertyType?: string;
+}
 
 // Função para mapear um único objeto do Supabase
 const mapSingleSupabaseToProperty = (p: any): Property => {
@@ -151,11 +185,13 @@ const PropertyDetail = () => {
         </div>
 
         {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
           {/* Left Column - Gallery and Details */}
           <div className="lg:col-span-2 space-y-8">
             {/* Gallery */}
-            <PropertyGallery images={property.images} title={property.title} />
+            <section>
+              <PropertyGallery images={property.images} title={property.title} />
+            </section>
             
             {/* Title and Location */}
             <div>
@@ -237,49 +273,49 @@ const PropertyDetail = () => {
           </div>
 
           {/* Right Column - Price and Contact */}
-          <div className="lg:col-span-1 space-y-6">
-            {/* Price Card */}
-            <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200 sticky top-24">
-              <div className="text-center mb-6">
-                <div className="text-3xl font-bold text-graphite-900 mb-2">
-                  {formatPrice(property.price)}
-                </div>
-                <div className="text-sm text-graphite-600">
-                  {formatPricePerMeter(property.price, property.areas.useful)}/m²
-                </div>
-              </div>
-              
-              {property.condominiumFee > 0 && (
-                <div className="border-t border-gray-200 pt-4 mb-4">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-graphite-600">Condomínio</span>
-                    <span className="font-semibold text-graphite-900">
-                      {formatPrice(property.condominiumFee)}
-                    </span>
+          <div className="lg:col-span-1">
+            <div className="sticky top-24 space-y-6">
+              <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+                <div className="text-center mb-6">
+                  <div className="text-3xl font-bold text-graphite-900 mb-2">
+                    {formatPrice(property.price)}
+                  </div>
+                  <div className="text-sm text-graphite-600">
+                    {formatPricePerMeter(property.price, property.areas.useful)}/m²
                   </div>
                 </div>
-              )}
-              
-              {property.iptu > 0 && (
-                <div className="flex justify-between items-center mb-6">
-                  <span className="text-graphite-600">IPTU</span>
-                  <span className="font-semibold text-graphite-900">
-                    {formatPrice(property.iptu)}
-                  </span>
+                
+                {property.condominiumFee > 0 && (
+                  <div className="border-t border-gray-200 pt-4 mb-4">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-graphite-600">Condomínio</span>
+                      <span className="font-semibold text-graphite-900">
+                        {formatPrice(property.condominiumFee)}
+                      </span>
+                    </div>
+                  </div>
+                )}
+                
+                {property.iptu > 0 && (
+                  <div className="flex justify-between items-center mb-6">
+                    <span className="text-graphite-600">IPTU</span>
+                    <span className="font-semibold text-graphite-900">
+                      {formatPrice(property.iptu)}
+                    </span>
+                  </div>
+                )}
+                
+                <button className="w-full bg-golden-500 text-white py-3 px-4 rounded-md hover:bg-golden-600 transition-colors duration-200 font-semibold text-lg mb-4">
+                  Quero mais informações
+                </button>
+                
+                <div className="text-center text-sm text-graphite-600">
+                  Atendimento imediato
                 </div>
-              )}
-              
-              <button className="w-full bg-golden-500 text-white py-3 px-4 rounded-md hover:bg-golden-600 transition-colors duration-200 font-semibold text-lg mb-4">
-                Quero mais informações
-              </button>
-              
-              <div className="text-center text-sm text-graphite-600">
-                Atendimento imediato
               </div>
-            </div>
 
-            {/* Contact Card */}
-            <ContactCard realtor={property.realtor} />
+              <ContactCard realtor={property.realtor} />
+            </div>
           </div>
         </div>
       </div>
