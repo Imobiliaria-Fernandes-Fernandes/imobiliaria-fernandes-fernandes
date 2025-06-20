@@ -7,6 +7,16 @@ import ContactCard from "../components/ContactCard";
 import { supabase } from "../lib/supabaseClient";
 import { Skeleton } from "@/components/ui/skeleton";
 
+// A interface Realtor agora representa a tabela 'corretores'
+interface Realtor {
+  id: string;
+  name: string;
+  creci: string;
+  photo: string;
+  phone: string;
+  whatsapp: string;
+}
+
 // Definindo a interface Property aqui, já que o arquivo data/properties foi removido.
 export interface Property {
   id: string;
@@ -32,14 +42,9 @@ export interface Property {
   amenities?: string[];
   condominiumFeatures?: string[];
   images: string[];
-  realtor: {
-    name: string;
-    creci: string;
-    photo: string;
-    phone: string;
-    whatsapp: string;
-  };
+  realtor: Realtor; // A propriedade realtor agora é um objeto Realtor
   propertyType?: string;
+  corretor_id?: string; // ID da chave estrangeira
 }
 
 // Função para mapear um único objeto do Supabase
@@ -68,14 +73,9 @@ const mapSingleSupabaseToProperty = (p: any): Property => {
     amenities: p.amenities || [],
     condominiumFeatures: p.condominium_features || [],
     images: p.images || [],
-    realtor: {
-      name: p.realtor_name,
-      creci: p.realtor_creci,
-      photo: p.realtor_photo,
-      phone: p.realtor_phone,
-      whatsapp: p.realtor_whatsapp,
-    },
-    propertyType: p.property_type
+    realtor: p.corretores, // Mapeando o objeto aninhado 'corretores'
+    propertyType: p.property_type,
+    corretor_id: p.corretor_id,
   };
 };
 
@@ -88,11 +88,15 @@ const PropertyDetail = () => {
     const fetchProperty = async () => {
       if (!id) return;
       setLoading(true);
+      // Consulta atualizada para buscar dados da tabela 'corretores'
       const { data, error } = await supabase
         .from('imoveis')
-        .select('*')
+        .select(`
+          *,
+          corretores(*)
+        `)
         .eq('id', id)
-        .single(); // .single() para buscar apenas um registro
+        .single();
 
       if (error || !data) {
         console.error("Imóvel não encontrado:", error);
@@ -314,7 +318,7 @@ const PropertyDetail = () => {
                 </div>
               </div>
 
-              <ContactCard realtor={property.realtor} />
+              <ContactCard realtor={property.realtor} propertyTitle={property.title} />
             </div>
           </div>
         </div>

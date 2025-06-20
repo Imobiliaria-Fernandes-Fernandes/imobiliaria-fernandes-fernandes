@@ -6,6 +6,16 @@ import PropertySearch from "../components/PropertySearch";
 import { supabase } from "../lib/supabaseClient";
 import { Skeleton } from "@/components/ui/skeleton";
 
+// A interface Realtor agora representa a tabela 'corretores'
+interface Realtor {
+  id: string;
+  name: string;
+  creci: string;
+  photo: string;
+  phone: string;
+  whatsapp: string;
+}
+
 // Definindo a interface Property aqui, já que o arquivo data/properties foi removido.
 export interface Property {
   id: string;
@@ -31,14 +41,9 @@ export interface Property {
   amenities?: string[];
   condominiumFeatures?: string[];
   images: string[];
-  realtor: {
-    name: string;
-    creci: string;
-    photo: string;
-    phone: string;
-    whatsapp: string;
-  };
+  realtor: Realtor;
   propertyType?: string;
+  corretor_id?: string;
 }
 
 // Definindo a interface para os filtros de busca
@@ -75,14 +80,9 @@ const mapSupabaseToProperty = (data: any[]): Property[] => {
     amenities: p.amenities || [],
     condominiumFeatures: p.condominium_features || [],
     images: p.images || [],
-    realtor: {
-      name: p.realtor_name,
-      creci: p.realtor_creci,
-      photo: p.realtor_photo,
-      phone: p.realtor_phone,
-      whatsapp: p.realtor_whatsapp,
-    },
-    propertyType: p.property_type
+    realtor: p.corretores, // Mapeando o objeto aninhado 'corretores'
+    propertyType: p.property_type,
+    corretor_id: p.corretor_id,
   }));
 };
 
@@ -95,7 +95,13 @@ const Properties = () => {
   useEffect(() => {
     const fetchProperties = async () => {
       setLoading(true);
-      const { data, error } = await supabase.from('imoveis').select('*');
+      // Consulta atualizada para buscar dados da tabela 'corretores'
+      const { data, error } = await supabase
+        .from('imoveis')
+        .select(`
+          *,
+          corretores(*)
+        `);
       
       if (error) {
         console.error("Erro ao buscar imóveis:", error);
