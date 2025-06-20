@@ -11,6 +11,7 @@ interface PropertySearchProps {
   showAdvancedFilters?: boolean;
   minPrice?: number;
   maxPrice?: number;
+  value?: SearchFilters;
 }
 
 interface SearchFilters {
@@ -29,10 +30,11 @@ const PropertySearch = ({
   showAdvancedFilters = true,
   minPrice = 0,
   maxPrice = 2000000,
+  value,
 }: PropertySearchProps) => {
   const navigate = useNavigate();
   
-  const [filters, setFilters] = useState<SearchFilters>({
+  const [filters, setFilters] = useState<SearchFilters>(value || {
     query: "",
     propertyType: "",
     location: "",
@@ -42,74 +44,71 @@ const PropertySearch = ({
   const [isSearching, setIsSearching] = useState(false);
 
   useEffect(() => {
-    setFilters(prev => ({ ...prev, priceRange: [minPrice, maxPrice] }));
-  }, [minPrice, maxPrice]);
+    if (value) {
+      setFilters(value);
+    }
+  }, [value]);
 
-  // Otimização otimista: atualiza o estado imediatamente
-  const handleQueryChange = useCallback((value: string) => {
-    setFilters(prev => ({ ...prev, query: value }));
-  }, []);
-
-  const handlePropertyTypeChange = useCallback((value: string) => {
-    setFilters(prev => ({ ...prev, propertyType: value }));
-  }, []);
-
-  const handleLocationChange = useCallback((value: string) => {
-    setFilters(prev => ({ ...prev, location: value }));
-  }, []);
-
-  const handlePriceRangeChange = useCallback((value: [number, number]) => {
-    setFilters(prev => ({ ...prev, priceRange: value }));
-  }, []);
-
-  // Função de busca otimista
-  const handleSearch = useCallback(async () => {
-    // Feedback visual imediato (otimização otimista)
+  const handleSearch = useCallback(async (currentFilters = filters) => {
     setIsSearching(true);
-
     try {
       if (onSearch) {
-        const searchFilters = {
-          ...filters,
-          priceRange: filters.priceRange as [number, number]
-        };
-        await onSearch(searchFilters);
+        await onSearch(currentFilters);
       } else {
-        // Navigate to properties page with search params
         const searchParams = new URLSearchParams();
-        if (filters.query) searchParams.set('q', filters.query);
-        if (filters.propertyType) searchParams.set('tipo', filters.propertyType);
-        if (filters.location) searchParams.set('local', filters.location);
-        searchParams.set('min_price', filters.priceRange[0].toString());
-        searchParams.set('max_price', filters.priceRange[1].toString());
+        if (currentFilters.query) searchParams.set('q', currentFilters.query);
+        if (currentFilters.propertyType) searchParams.set('tipo', currentFilters.propertyType);
+        if (currentFilters.location) searchParams.set('local', currentFilters.location);
+        if (currentFilters.priceRange[0] > minPrice) searchParams.set('min_price', currentFilters.priceRange[0].toString());
+        if (currentFilters.priceRange[1] < maxPrice) searchParams.set('max_price', currentFilters.priceRange[1].toString());
         
         navigate(`/imoveis?${searchParams.toString()}`);
       }
     } catch (error) {
       console.error('Erro na busca:', error);
-      // Em caso de erro, mantemos o estado otimista mas logamos o erro
     } finally {
-      setIsSearching(false);
+      setTimeout(() => setIsSearching(false), 300);
     }
-  }, [filters, onSearch, navigate]);
+  }, [filters, onSearch, navigate, minPrice, maxPrice]);
 
-  const handleKeyPress = useCallback((e: React.KeyboardEvent) => {
+  useEffect(() => {
+    const initialRender = filters.propertyType === "" && filters.location === "";
+    if (!initialRender) {
+      handleSearch();
+    }
+  }, [filters.propertyType, filters.location]);
+
+  const handleQueryChange = (value: string) => {
+    setFilters(prev => ({ ...prev, query: value }));
+  };
+
+  const handlePropertyTypeChange = (value: string) => {
+    setFilters(prev => ({ ...prev, propertyType: value }));
+  };
+
+  const handleLocationChange = (value: string) => {
+    setFilters(prev => ({ ...prev, location: value }));
+  };
+
+  const handlePriceRangeChange = (value: [number, number]) => {
+    setFilters(prev => ({ ...prev, priceRange: value }));
+  };
+  
+  const handlePriceRangeCommit = (value: [number, number]) => {
+    const newFilters = { ...filters, priceRange: value };
+    handleSearch(newFilters);
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       handleSearch();
     }
-  }, [handleSearch]);
-
-  // Memoização dos filtros para evitar re-renders desnecessários
-  const hasActiveFilters = useMemo(() => {
-    return filters.query || filters.propertyType || filters.location || filters.priceRange.some((value) => value !== 0);
-  }, [filters]);
+  };
 
   return (
     <div className="flex items-center w-full gap-2">
-      {/* Barra de busca horizontal inspirada no Airbnb */}
       <div className="flex-grow flex items-center border border-gray-200 rounded-full shadow-sm h-20 bg-white overflow-hidden">
         
-        {/* Filtro: Busca por texto */}
         <div className="flex-auto px-6 py-2">
           <label htmlFor="search-query" className="block text-xs font-bold text-gray-800 mb-1">Busca</label>
           <Input
@@ -126,7 +125,6 @@ const PropertySearch = ({
 
         <div className="h-12 w-px bg-gray-200" />
 
-        {/* Filtro: Tipo de Imóvel */}
         <div className="w-52 px-5 py-2">
           <label className="block text-xs font-bold text-gray-800 mb-1">Tipo</label>
           <Select value={filters.propertyType} onValueChange={handlePropertyTypeChange} disabled={isSearching}>
@@ -144,7 +142,6 @@ const PropertySearch = ({
 
         <div className="h-12 w-px bg-gray-200" />
         
-        {/* Filtro: Região Desejada */}
         <div className="w-52 px-5 py-2">
           <label className="block text-xs font-bold text-gray-800 mb-1">Região</label>
           <Select value={filters.location} onValueChange={handleLocationChange} disabled={isSearching}>
@@ -170,13 +167,13 @@ const PropertySearch = ({
 
         <div className="h-12 w-px bg-gray-200" />
 
-        {/* Filtro: Faixa de Preço */}
         <div className="w-72 px-5 py-2">
           <label className="block text-xs font-bold text-gray-800 mb-1">Preço</label>
           <div className="w-full">
             <Slider
               value={filters.priceRange}
               onValueChange={handlePriceRangeChange}
+              onValueCommit={handlePriceRangeCommit}
               min={minPrice}
               max={maxPrice}
               step={10000}
@@ -190,14 +187,13 @@ const PropertySearch = ({
           </div>
         </div>
 
-        {/* Botão de Busca */}
         <div className="pr-2 py-2">
            <Button
-            onClick={handleSearch}
+            onClick={() => handleSearch()}
             disabled={isSearching}
             className={`rounded-full h-12 w-12 flex-shrink-0 flex items-center justify-center transition-all duration-200 ${
               isSearching 
-                ? 'bg-gray-400 cursor-not-allowed' 
+                ? 'bg-gray-400 cursor-not-allowed animate-pulse' 
                 : 'bg-golden-500 hover:bg-golden-600 text-white'
             }`}
           >

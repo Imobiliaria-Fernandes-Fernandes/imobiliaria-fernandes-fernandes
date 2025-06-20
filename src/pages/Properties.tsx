@@ -4,8 +4,42 @@ import Navbar from "../components/Navbar";
 import PropertyCard from "../components/PropertyCard";
 import PropertySearch from "../components/PropertySearch";
 import { supabase } from "../lib/supabaseClient";
-import { Property } from "../data/properties";
 import { Skeleton } from "@/components/ui/skeleton";
+
+// Definindo a interface Property aqui, já que o arquivo data/properties foi removido.
+export interface Property {
+  id: string;
+  title: string;
+  location: {
+    neighborhood: string;
+    city: string;
+    state: string;
+  };
+  price: number;
+  condominiumFee?: number;
+  iptu?: number;
+  areas: {
+    useful: number;
+    total?: number;
+  };
+  rooms: {
+    bedrooms: number;
+    bathrooms: number;
+    parkingSpaces?: number;
+  };
+  description: string;
+  amenities?: string[];
+  condominiumFeatures?: string[];
+  images: string[];
+  realtor: {
+    name: string;
+    creci: string;
+    photo: string;
+    phone: string;
+    whatsapp: string;
+  };
+  propertyType?: string;
+}
 
 // Definindo a interface para os filtros de busca
 interface SearchFilters {
@@ -152,6 +186,7 @@ const Properties = () => {
             showAdvancedFilters={true}
             minPrice={priceLimits.min}
             maxPrice={priceLimits.max}
+            value={filters}
           />
         </div>
       </section>
