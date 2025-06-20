@@ -279,6 +279,7 @@ const PropertyDetail = () => {
           {/* Right Column - Price and Contact */}
           <div className="lg:col-span-1">
             <div className="sticky top-24 space-y-6">
+              {/* Price Card */}
               <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
                 <div className="text-center mb-6">
                   <div className="text-3xl font-bold text-graphite-900 mb-2">
@@ -291,7 +292,7 @@ const PropertyDetail = () => {
                 
                 {property.condominiumFee > 0 && (
                   <div className="border-t border-gray-200 pt-4 mb-4">
-                    <div className="flex justify-between items-center mb-2">
+                    <div className="flex justify-between items-center">
                       <span className="text-graphite-600">Condomínio</span>
                       <span className="font-semibold text-graphite-900">
                         {formatPrice(property.condominiumFee)}
@@ -301,23 +302,18 @@ const PropertyDetail = () => {
                 )}
                 
                 {property.iptu > 0 && (
-                  <div className="flex justify-between items-center mb-6">
-                    <span className="text-graphite-600">IPTU</span>
-                    <span className="font-semibold text-graphite-900">
-                      {formatPrice(property.iptu)}
-                    </span>
+                  <div className="border-t border-gray-200 pt-4">
+                     <div className="flex justify-between items-center">
+                        <span className="text-graphite-600">IPTU</span>
+                        <span className="font-semibold text-graphite-900">
+                          {formatPrice(property.iptu)}
+                        </span>
+                      </div>
                   </div>
                 )}
-                
-                <button className="w-full bg-golden-500 text-white py-3 px-4 rounded-md hover:bg-golden-600 transition-colors duration-200 font-semibold text-lg mb-4">
-                  Quero mais informações
-                </button>
-                
-                <div className="text-center text-sm text-graphite-600">
-                  Atendimento imediato
-                </div>
               </div>
 
+              {/* Contact Card */}
               <ContactCard realtor={property.realtor} propertyTitle={property.title} />
             </div>
           </div>
